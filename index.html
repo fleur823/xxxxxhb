@@ -1,587 +1,340 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.6">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>海豹生日派对 🎂</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap');
+
+    :root {
+      --ac-bg: #fff9e6;
+      --ac-green: #7fd461;
+      --ac-blue: #70d1e0;
+      --ac-yellow: #f9d448;
+      --ac-orange: #ff9d6e;
+      --ac-pink: #ffb7c5;
+      --ac-brown: #8b5a2b;
+      --ac-red: #ff6b6b;
+    }
+
+    body {
+      background-color: var(--ac-bg);
+      background-image: radial-gradient(#f0e6cc 1.5px, transparent 1.5px);
+      background-size: 30px 30px;
+      font-family: 'ZCOOL KuaiLe', cursive, sans-serif;
+      overflow-x: hidden;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      color: var(--ac-brown);
+    }
+
+    /* 顶部挂旗装饰 */
+    .bunting {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      z-index: 50;
+      pointer-events: none;
+    }
+    .flag {
+      width: 40px;
+      height: 50px;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      animation: sway 3s infinite ease-in-out;
+      transform-origin: top center;
+    }
+    @keyframes sway {
+      0%, 100% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+    }
+
+    /* 气球增强 */
+    .balloon {
+      position: fixed;
+      z-index: 5;
+      animation: drift 8s infinite ease-in-out;
+      filter: drop-shadow(0 6px 4px rgba(0,0,0,0.05));
+      user-select: none;
+    }
+    .balloon::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      width: 2px;
+      height: 30px;
+      background: rgba(139, 90, 43, 0.2);
+    }
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0) rotate(-5deg); }
+      33% { transform: translate(15px, -30px) rotate(5deg); }
+      66% { transform: translate(-10px, -50px) rotate(-2deg); }
+    }
+
+    /* 背景星星 */
+    .star {
+      position: fixed;
+      color: var(--ac-yellow);
+      animation: blink 2s infinite ease-in-out;
+      z-index: 1;
+      pointer-events: none;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 0.3; transform: scale(0.8); }
+      50% { opacity: 0.8; transform: scale(1.1); }
+    }
+
+    /* 转盘样式 */
+    .wheel-container {
+      position: relative;
+      width: 320px;
+      height: 320px;
+      margin: 2rem 0;
+      z-index: 20;
+    }
+    .wheel-outer {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 12px solid #fff;
+      position: relative;
+      overflow: hidden;
+      transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1);
+      background: #fff;
+      box-shadow: 0 10px 0 rgba(0,0,0,0.05), 0 20px 40px rgba(139, 90, 43, 0.15);
+    }
+    .wheel-pointer {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 45px;
+      height: 45px;
+      z-index: 40;
+      filter: drop-shadow(0 4px 0 rgba(0,0,0,0.1));
+    }
+    .wheel-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px;
+      height: 80px;
+      background: var(--ac-red);
+      border-radius: 25px;
+      z-index: 45;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 0 #d64545, 0 12px 24px rgba(0,0,0,0.15);
+      cursor: pointer;
+      border: 5px solid #fff;
+      transition: all 0.2s;
+    }
+    .wheel-center:active {
+      transform: translate(-50%, -42%);
+      box-shadow: 0 2px 0 #d64545;
+    }
+    .segment {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      transform-origin: 100% 100%;
+      left: 0;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .segment-symbol {
+      transform: rotate(18deg);
+      font-size: 26px;
+      margin-bottom: 65px;
+      margin-left: 65px;
+      filter: drop-shadow(0 2px 0 rgba(255,255,255,0.6));
+    }
+
+    /* 弹窗升级 */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 250, 230, 0.95);
+      z-index: 1000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .prize-card {
+      background: white;
+      border: 8px solid var(--ac-green);
+      padding: 2.5rem;
+      border-radius: 50px;
+      box-shadow: 0 12px 0 var(--ac-green), 0 25px 50px rgba(0,0,0,0.12);
+      max-width: 88%;
+      color: var(--ac-brown);
+      position: relative;
+    }
+    .ac-button {
+      background: var(--ac-green);
+      color: white;
+      padding: 1.2rem 3rem;
+      border-radius: 60px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      box-shadow: 0 8px 0 #5fb042;
+      transition: all 0.1s;
+      border: 4px solid white;
+    }
+    .ac-button:active {
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 #5fb042;
+    }
+    .chance-pill {
+      background: white;
+      border: 4px solid var(--ac-blue);
+      padding: 6px 20px;
+      border-radius: 30px;
+      color: var(--ac-blue);
+      font-size: 1rem;
+      box-shadow: 0 4px 0 var(--ac-blue);
+      margin-top: 10px;
+    }
+
+    /* 背景持续飘落彩带 */
+    .ambient-confetti {
+      position: fixed;
+      top: -20px;
+      z-index: 2;
+      pointer-events: none;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      to { transform: translateY(110vh) rotate(720deg); }
+    }
+
+    /* 列表容器 */
+    #giftListContainer {
+      width: 100%;
+      max-width: 350px;
+      padding: 10px;
+    }
+    .gift-item {
+      background: white;
+      border-radius: 25px;
+      padding: 1.2rem 1.8rem;
+      margin: 0.8rem 0;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 5px 0 #e0d5b8;
+      border: 3px solid #fff;
+      animation: slideIn 0.4s ease-out backwards;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ✅ 修复：最终清单页默认隐藏 */
+    #overviewView {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
   </style>
 </head>
+
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="zh-CN"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;海豹生日派对 🎂&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>@import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&amp;display=swap');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>:root {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--ac-bg: #fff9e6;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--ac-green: #7fd461;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--ac-blue: #70d1e0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--ac-yellow: #f9d448;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--ac-orange: #ff9d6e;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--ac-pink: #ffb7c5;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--ac-brown: #8b5a2b;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>--ac-red: #ff6b6b;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: var(--ac-bg);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-image: radial-gradient(#f0e6cc 1.5px, transparent 1.5px);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-size: 30px 30px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'ZCOOL KuaiLe', cursive, sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>overflow-x: hidden;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>min-height: 100vh;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: var(--ac-brown);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* 顶部挂旗装饰 */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.bunting {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: fixed;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>top: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>left: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: space-around;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 50;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>pointer-events: none;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.flag {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 40px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 50px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>clip-path: polygon(0 0, 100% 0, 50% 100%);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>animation: sway 3s infinite ease-in-out;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transform-origin: top center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>@keyframes sway {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>0%, 100% { transform: rotate(-5deg); }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>50% { transform: rotate(5deg); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* 气球增强 */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.balloon {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: fixed;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 5;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>animation: drift 8s infinite ease-in-out;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>filter: drop-shadow(0 6px 4px rgba(0,0,0,0.05));</p>
-<p class="p1"><span class="Apple-converted-space">            </span>user-select: none;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.balloon::after {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>content: '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>bottom: -20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>left: 50%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 2px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 30px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(139, 90, 43, 0.2);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>@keyframes drift {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>0%, 100% { transform: translate(0, 0) rotate(-5deg); }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>33% { transform: translate(15px, -30px) rotate(5deg); }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>66% { transform: translate(-10px, -50px) rotate(-2deg); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* 背景星星 */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.star {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: fixed;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: var(--ac-yellow);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>animation: blink 2s infinite ease-in-out;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 1;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>pointer-events: none;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>@keyframes blink {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>0%, 100% { opacity: 0.3; transform: scale(0.8); }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>50% { opacity: 0.8; transform: scale(1.1); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* 转盘样式 */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.wheel-container {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: relative;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 320px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 320px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 2rem 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 20;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.wheel-outer {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 50%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 12px solid #fff;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: relative;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #fff;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 10px 0 rgba(0,0,0,0.05), 0 20px 40px rgba(139, 90, 43, 0.15);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.wheel-pointer {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>top: -20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>left: 50%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transform: translateX(-50%);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 45px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 45px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 40;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>filter: drop-shadow(0 4px 0 rgba(0,0,0,0.1));</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.wheel-center {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>top: 50%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>left: 50%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transform: translate(-50%, -50%);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 80px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 80px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: var(--ac-red);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 25px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 45;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 8px 0 #d64545, 0 12px 24px rgba(0,0,0,0.15);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 5px solid #fff;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transition: all 0.2s;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.wheel-center:active {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transform: translate(-50%, -42%);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 2px 0 #d64545;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.segment {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 50%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 50%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transform-origin: 100% 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>left: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>top: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.segment-symbol {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transform: rotate(18deg);<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 26px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 65px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-left: 65px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>filter: drop-shadow(0 2px 0 rgba(255,255,255,0.6));</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* 弹窗升级 */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.modal {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: fixed;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>inset: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(255, 250, 230, 0.95);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 1000;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>backdrop-filter: blur(6px);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>@keyframes popIn {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>from { transform: scale(0.5); opacity: 0; }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>to { transform: scale(1); opacity: 1; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.prize-card {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 8px solid var(--ac-green);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 2.5rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 50px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 12px 0 var(--ac-green), 0 25px 50px rgba(0,0,0,0.12);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>max-width: 88%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: var(--ac-brown);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: relative;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.ac-button {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: var(--ac-green);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 1.2rem 3rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 60px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.3rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 8px 0 #5fb042;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transition: all 0.1s;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 4px solid white;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.ac-button:active {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transform: translateY(6px);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 2px 0 #5fb042;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.chance-pill {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 4px solid var(--ac-blue);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 6px 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 30px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: var(--ac-blue);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 0 var(--ac-blue);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* 背景持续飘落彩带 */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.ambient-confetti {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>position: fixed;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>top: -20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>z-index: 2;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>pointer-events: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>animation: fall linear forwards;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>@keyframes fall {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>to { transform: translateY(110vh) rotate(720deg); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* 列表容器 */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>#giftListContainer {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>max-width: 350px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.gift-item {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 25px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 1.2rem 1.8rem;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 0.8rem 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 5px 0 #e0d5b8;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 3px solid #fff;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>animation: slideIn 0.4s ease-out backwards;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>@keyframes slideIn {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>from { opacity: 0; transform: translateX(-20px); }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>to { opacity: 1; transform: translateX(0); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 派对挂旗 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="bunting"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="flag" style="background-color: var(--ac-red); animation-delay: 0s;"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="flag" style="background-color: var(--ac-blue); animation-delay: 0.2s;"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="flag" style="background-color: var(--ac-yellow); animation-delay: 0.4s;"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="flag" style="background-color: var(--ac-green); animation-delay: 0.6s;"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="flag" style="background-color: var(--ac-pink); animation-delay: 0.8s;"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="flag" style="background-color: var(--ac-orange); animation-delay: 1.0s;"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="flag" style="background-color: var(--ac-red); animation-delay: 1.2s;"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 背景装饰气球 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="balloon" style="top: 12%; left: 8%; font-size: 50px; color: var(--ac-red); animation-duration: 7s;"&gt;🎈&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="balloon" style="top: 25%; right: 5%; font-size: 40px; color: var(--ac-blue); animation-delay: -2s; animation-duration: 9s;"&gt;🎈&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="balloon" style="bottom: 15%; left: 12%; font-size: 45px; color: var(--ac-yellow); animation-delay: -4s; animation-duration: 8s;"&gt;🎈&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="balloon" style="bottom: 25%; right: 10%; font-size: 35px; color: var(--ac-pink); animation-delay: -1s; animation-duration: 6s;"&gt;🎈&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 顶部标题区 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="mainUI" class="text-center px-4 z-20"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="mb-4 mt-6"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;span class="text-6xl animate-bounce inline-block"&gt;🎁&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h1 class="text-4xl font-black tracking-tight mb-2" style="text-shadow: 3px 3px 0 white; color: var(--ac-brown);"&gt;海豹生日派对!&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;p class="text-base font-bold opacity-80 mb-2"&gt;“ 30岁啦！你是最幸运的海豹！” &lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="chance-pill inline-block"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>🎁 开启机会：&lt;span id="chanceCount" class="font-bold"&gt;3&lt;/span&gt; / 3</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 转盘 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="wheelArea" class="wheel-container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="wheel-pointer"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;svg viewBox="0 0 40 40"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;path d="M20 40 L5 10 A15 15 0 1 1 35 10 Z" fill="white" stroke="#ff6b6b" stroke-width="4"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/svg&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="wheel" class="wheel-outer"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="spinBtn" class="wheel-center" onclick="spinWheel()"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="text-white text-center leading-none"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div style="font-size: 24px;"&gt;✨&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="mt-1 font-black" style="font-size: 16px;"&gt;GO!&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="footerNote" class="px-8 text-center max-w-sm text-sm font-bold opacity-50 z-20 mb-10"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>点击红色小礼盒，&lt;br&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>摇出属于海豹的三十岁惊喜！</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 结果展示弹窗 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="resultModal" class="modal"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="prize-card text-center"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="text-6xl mb-4"&gt;🎉&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2 class="text-3xl font-bold mb-4"&gt;太棒啦！&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="text-sm opacity-60 mb-4 italic"&gt;恭喜你获得了这份礼物：&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="prizeResult" class="text-2xl font-black bg-yellow-50 py-5 px-6 rounded-3xl border-4 border-dashed border-yellow-300 mb-8 text-orange-600"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;!-- 礼物名 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button onclick="closeModal()" id="modalActionBtn" class="ac-button w-full"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>收入清单中！</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 最终清单页 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="overviewView"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="mt-12 mb-8 text-center"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="text-6xl mb-6 animate-bounce"&gt;🦭&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2 class="text-4xl font-black text-brown"&gt;海豹的心愿单&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="opacity-70 text-base font-bold mt-4"&gt;这些礼物都要在三十岁实现喔！（熊有最终解释权）&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="giftListContainer" class="flex flex-col items-center"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- 列表项 --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="mt-12 flex flex-col items-center gap-6 pb-16"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button onclick="resetGame()" class="ac-button" style="background-color: var(--ac-blue); box-shadow: 0 8px 0 #4da9b8;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>🔄 重新开启</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="text-center"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="text-sm font-bold opacity-60 italic"&gt;愿你的三十岁&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="text-lg font-black text-pink-500 mt-1"&gt;越来越好，天天开心！💖&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;canvas id="confetti" class="fixed inset-0 pointer-events-none z-[2000]"&gt;&lt;/canvas&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const prizes = [</p>
-<p class="p1"><span class="Apple-converted-space">            </span>"双人高定午餐", "新的发型设计", "随心飞机票卡", "京东卡2000元", "量体裁制西服",</p>
-<p class="p1"><span class="Apple-converted-space">            </span>"新的骑行伙伴", "下个体验课费", "心仪数码产品", "熊熊亲亲一枚", "熊熊抱抱一个"</p>
-<p class="p1"><span class="Apple-converted-space">        </span>];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const mysteryIcons = ["⭐", "💎", "🍭", "🍀", "🐚", "🍄", "🧶", "🎨", "🎈", "🍒"];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const colors = [</p>
-<p class="p1"><span class="Apple-converted-space">            </span>"#ffb7c5", "#70d1e0", "#f9d448", "#7fd461", "#ff9d6e",</p>
-<p class="p1"><span class="Apple-converted-space">            </span>"#ffb7c5", "#70d1e0", "#f9d448", "#7fd461", "#ff9d6e"</p>
-<p class="p1"><span class="Apple-converted-space">        </span>];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>let remainingChances = 3;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let wonPrizes = [];</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let isSpinning = false;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let currentRotation = 0;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const wheel = document.getElementById('wheel');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const chanceDisplay = document.getElementById('chanceCount');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const resultModal = document.getElementById('resultModal');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const prizeResult = document.getElementById('prizeResult');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const giftListContainer = document.getElementById('giftListContainer');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// 初始化星星背景</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function initStars() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>for(let i=0; i&lt;20; i++) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const star = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>star.className = 'star';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>star.innerText = '✦';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>star.style.left = Math.random() * 100 + 'vw';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>star.style.top = Math.random() * 100 + 'vh';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>star.style.fontSize = (Math.random() * 15 + 10) + 'px';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>star.style.animationDelay = Math.random() * 2 + 's';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.body.appendChild(star);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// 背景亮片效果</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function createAmbientConfetti() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const colors = ['#ff6b6b', '#4dadff', '#ffd93d', '#7fd461', '#ffb7c5'];</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const c = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>c.className = 'ambient-confetti';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>c.style.left = Math.random() * 100 + 'vw';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>c.style.width = Math.random() * 8 + 4 + 'px';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>c.style.height = c.style.width;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];</p>
-<p class="p1"><span class="Apple-converted-space">            </span>c.style.borderRadius = Math.random() &gt; 0.5 ? '50%' : '2px';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>c.style.animationDuration = Math.random() * 3 + 4 + 's';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>c.style.opacity = Math.random() * 0.5 + 0.3;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.body.appendChild(c);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; c.remove(), 7000);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function initWheel() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>wheel.innerHTML = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const segmentAngle = 360 / prizes.length;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>prizes.forEach((_, i) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const segment = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>segment.className = 'segment';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>segment.style.transform = `rotate(${i * segmentAngle}deg)`;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>segment.style.backgroundColor = colors[i];</p>
-<p class="p1"><span class="Apple-converted-space">                </span>segment.style.clipPath = "polygon(100% 100%, 0 0, 65% 0)";</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>const icon = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>icon.className = 'segment-symbol';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>icon.innerText = mysteryIcons[i];</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>segment.appendChild(icon);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>wheel.appendChild(segment);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function spinWheel() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (isSpinning || remainingChances &lt;= 0) return;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>isSpinning = true;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>remainingChances--;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>chanceDisplay.innerText = remainingChances;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const prizeIndex = Math.floor(Math.random() * prizes.length);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const segmentAngle = 360 / prizes.length;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const extraSpins = (6 + Math.floor(Math.random() * 3)) * 360;<span class="Apple-converted-space"> </span></p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const targetRotation = extraSpins + (360 - (prizeIndex * segmentAngle) - (segmentAngle / 2));</p>
-<p class="p1"><span class="Apple-converted-space">            </span>currentRotation += targetRotation;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>wheel.style.transform = `rotate(${currentRotation}deg)`;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>showResult(prizes[prizeIndex]);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}, 5200);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function showResult(prize) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>wonPrizes.push(prize);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>prizeResult.innerText = prize;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>resultModal.style.display = 'flex';</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>if(remainingChances === 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('modalActionBtn').innerText = "查看海豹的最终清单";</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('modalActionBtn').innerText = "放入心愿单！";</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>startConfetti();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function closeModal() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>resultModal.style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>isSpinning = false;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (remainingChances === 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>showOverview();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function showOverview() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>giftListContainer.innerHTML = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>wonPrizes.forEach((gift, index) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const item = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>item.className = 'gift-item';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>item.style.animationDelay = (index * 0.15) + 's';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>item.innerHTML = `</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="w-12 h-12 rounded-2xl bg-orange-100 flex items-center justify-center mr-5 text-2xl shadow-inner"&gt;🎁&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="text-xs font-bold opacity-40 uppercase tracking-tighter"&gt;Heart Wish No.${index + 1}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="text-lg font-black text-brown"&gt;${gift}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>`;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>giftListContainer.appendChild(item);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('mainUI').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('wheelArea').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('footerNote').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('overviewView').style.display = 'flex';</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function resetGame() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>remainingChances = 3;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>wonPrizes = [];</p>
-<p class="p1"><span class="Apple-converted-space">            </span>currentRotation = 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>isSpinning = false;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>chanceDisplay.innerText = remainingChances;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>wheel.style.transition = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>wheel.style.transform = `rotate(0deg)`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; { wheel.style.transition = 'transform 5s cubic-bezier(0.15, 0, 0.15, 1)'; }, 50);</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('mainUI').style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('wheelArea').style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('footerNote').style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('overviewView').style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('modalActionBtn').innerText = "放入心愿单！";</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// 撒花特效</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const canvas = document.getElementById('confetti');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const ctx = canvas.getContext('2d');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let particles = [];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function startConfetti() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>canvas.width = window.innerWidth;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>canvas.height = window.innerHeight;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>particles = [];</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const colors = ['#ff6b6b', '#4dadff', '#ffd93d', '#7fd461', '#ffb7c5'];</p>
-<p class="p1"><span class="Apple-converted-space">            </span>for (let i = 0; i &lt; 150; i++) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>particles.push({</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>x: canvas.width / 2 + (Math.random() - 0.5) * 50,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>y: canvas.height / 2 + (Math.random() - 0.5) * 50,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>vx: (Math.random() - 0.5) * 20,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>vy: (Math.random() - 0.7) * 20,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>size: Math.random() * 10 + 5,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>color: colors[Math.floor(Math.random() * colors.length)],</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>rot: Math.random() * 360,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>rS: Math.random() * 10 - 5</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>animateConfetti();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function animateConfetti() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>ctx.clearRect(0, 0, canvas.width, canvas.height);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>particles.forEach((p, i) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>p.vx *= 0.99;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>p.vy += 0.4; // 重力</p>
-<p class="p1"><span class="Apple-converted-space">                </span>p.x += p.vx;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>p.y += p.vy;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>p.rot += p.rS;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (p.y &gt; canvas.height) particles.splice(i, 1);</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>ctx.save();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>ctx.translate(p.x, p.y);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>ctx.rotate(p.rot * Math.PI / 180);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>ctx.fillStyle = p.color;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>ctx.restore();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (particles.length &gt; 0) requestAnimationFrame(animateConfetti);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// 启动环境亮片</p>
-<p class="p1"><span class="Apple-converted-space">        </span>setInterval(createAmbientConfetti, 300);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>initStars();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>initWheel();</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
-</body>
-</html>
+  <!-- 派对挂旗 -->
+  <div class="bunting">
+    <div class="flag" style="background-color: var(--ac-red); animation-delay: 0s;"></div>
+    <div class="flag" style="background-color: var(--ac-blue); animation-delay: 0.2s;"></div>
+    <div class="flag" style="background-color: var(--ac-yellow); animation-delay: 0.4s;"></div>
+    <div class="flag" style="background-color: var(--ac-green); animation-delay: 0.6s;"></div>
+    <div class="flag" style="background-color: var(--ac-pink); animation-delay: 0.8s;"></div>
+    <div class="flag" style="background-color: var(--ac-orange); animation-delay: 1.0s;"></div>
+    <div class="flag" style="background-color: var(--ac-red); animation-delay: 1.2s;"></div>
+  </div>
+
+  <!-- 背景装饰气球 -->
+  <div class="balloon" style="top: 12%; left: 8%; font-size: 50px; color: var(--ac-red); animation-duration: 7s;">🎈</div>
+  <div class="balloon" style="top: 25%; right: 5%; font-size: 40px; color: var(--ac-blue); animation-delay: -2s; animation-duration: 9s;">🎈</div>
+  <div class="balloon" style="bottom: 15%; left: 12%; font-size: 45px; color: var(--ac-yellow); animation-delay: -4s; animation-duration: 8s;">🎈</div>
+  <div class="balloon" style="bottom: 25%; right: 10%; font-size: 35px; color: var(--ac-pink); animation-delay: -1s; animation-duration: 6s;">🎈</div>
+
+  <!-- 顶部标题区 -->
+  <div id="mainUI" class="text-center px-4 z-20">
+    <div class="mb-4 mt-6">
+      <span class="text-6xl animate-bounce inline-block">🎁</span>
+    </div>
+    <h1 class="text-4xl font-black tracking-tight mb-2" style="text-shadow: 3px 3px 0 white; color: var(--ac-brown);">海豹生日派对!</h1>
+    <p class="text-base font-bold opacity-80 mb-2">“ 30岁啦！你是最幸运的海豹！” </p>
+    <div class="chance-pill inline-block">
+      🎁 开启机会：<span id="chanceCount" class="font-bold">3</span> / 3
+    </div>
+  </div>
+
+  <!-- 转盘 -->
+  <div id="wheelArea" class="wheel-container">
+    <div class="wheel-pointer">
+      <svg viewBox="0 0 40 40">
+        <path d="M20 40 L5 10 A15 15 0 1 1 35 10 Z" fill="white" stroke="#ff6b6b" stroke-width="4" />
+      </svg>
+    </div>
+
+    <div id="wheel" class="wheel-outer"></div>
+
+    <div id="spinBtn" class="wheel-center" onclick="spinWheel()">
+      <div class="text-white text-center leading-none">
+        <div style="font-size: 24px;">✨</div>
+        <div class="mt-1 font-black" style="font-size: 16px;">GO!</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footerNote" class="px-8 text-center max-w-sm text-sm font-bold opacity-50 z-20 mb-10">
+    点击红色小礼盒，<br />
+    摇出属于海豹的三十岁惊喜！
+  </div>
+
+  <!-- 结果展示弹窗 -->
+  <div id="resultModal" class="modal">
+    <div class="prize-card text-center">
+      <div class="text-6xl mb-4">🎉</div>
+      <h2 class="text-3xl font-bold mb-4">太棒啦！</h2>
+      <p class="text-sm opacity-60 mb-4 italic">恭喜你获得了这份礼物：</p>
+      <div id="prizeResult" class="text-2xl font-black bg-yellow-50 py-5 px-6 rounded-3xl border-4 border-dashed border-yellow-300 mb-8 text-orange-600"></div>
+      <button onclick="closeModal()" id="modalActionBtn" class="ac-button w-full">收入清单中！</button>
+    </div>
+  </div>
+
+  <!-- 最终清单页 -->
+  <div id="overviewView">
+    <div class="mt-12 mb-8 text-center">
+      <div class="text-6xl mb-6 animate-bounce">🦭</div>
+      <h2 class="text-4xl font-black text-brown">海豹的心愿单</h2>
+      <p class="opacity-70 text-base font-bold mt-4">这些礼物都要在三十岁实现喔！（熊有最终解释权）</p>
+    </div>
+
+    <div id="giftListContainer" class="flex flex-col items-center"></div>
+
+    <div class="mt-12 flex flex-col items-center gap-6 pb-16">
+      <button onclick="resetGame()" cla
