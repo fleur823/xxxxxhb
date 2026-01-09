@@ -337,4 +337,225 @@
     <div id="giftListContainer" class="flex flex-col items-center"></div>
 
     <div class="mt-12 flex flex-col items-center gap-6 pb-16">
-      <button onclick="resetGame()" cla
+      <button onclick="resetGame()" class="ac-button" style="background-color: var(--ac-blue); box-shadow: 0 8px 0 #4da9b8;">
+        🔄 重新开启
+      </button>
+      <div class="text-center">
+        <p class="text-sm font-bold opacity-60 italic">愿你的三十岁</p>
+        <p class="text-lg font-black text-pink-500 mt-1">越来越好，天天开心！💖</p>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="confetti" class="fixed inset-0 pointer-events-none z-[2000]"></canvas>
+
+  <script>
+    const prizes = [
+      "双人高定午餐", "新的发型设计", "随心飞机票卡", "京东卡2000元", "量体裁制西服",
+      "新的骑行伙伴", "下个体验课费", "心仪数码产品", "熊熊亲亲一枚", "熊熊抱抱一个"
+    ];
+
+    const mysteryIcons = ["⭐", "💎", "🍭", "🍀", "🐚", "🍄", "🧶", "🎨", "🎈", "🍒"];
+
+    const colors = [
+      "#ffb7c5", "#70d1e0", "#f9d448", "#7fd461", "#ff9d6e",
+      "#ffb7c5", "#70d1e0", "#f9d448", "#7fd461", "#ff9d6e"
+    ];
+
+    let remainingChances = 3;
+    let wonPrizes = [];
+    let isSpinning = false;
+    let currentRotation = 0;
+
+    const wheel = document.getElementById('wheel');
+    const chanceDisplay = document.getElementById('chanceCount');
+    const resultModal = document.getElementById('resultModal');
+    const prizeResult = document.getElementById('prizeResult');
+    const giftListContainer = document.getElementById('giftListContainer');
+
+    // 初始化星星背景
+    function initStars() {
+      for (let i = 0; i < 20; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.innerText = '✦';
+        star.style.left = Math.random() * 100 + 'vw';
+        star.style.top = Math.random() * 100 + 'vh';
+        star.style.fontSize = (Math.random() * 15 + 10) + 'px';
+        star.style.animationDelay = Math.random() * 2 + 's';
+        document.body.appendChild(star);
+      }
+    }
+
+    // 背景亮片效果
+    function createAmbientConfetti() {
+      const colors = ['#ff6b6b', '#4dadff', '#ffd93d', '#7fd461', '#ffb7c5'];
+      const c = document.createElement('div');
+      c.className = 'ambient-confetti';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.width = Math.random() * 8 + 4 + 'px';
+      c.style.height = c.style.width;
+      c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      c.style.animationDuration = Math.random() * 3 + 4 + 's';
+      c.style.opacity = Math.random() * 0.5 + 0.3;
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 7000);
+    }
+
+    function initWheel() {
+      wheel.innerHTML = '';
+      const segmentAngle = 360 / prizes.length;
+      prizes.forEach((_, i) => {
+        const segment = document.createElement('div');
+        segment.className = 'segment';
+        segment.style.transform = `rotate(${i * segmentAngle}deg)`;
+        segment.style.backgroundColor = colors[i];
+        segment.style.clipPath = "polygon(100% 100%, 0 0, 65% 0)";
+
+        const icon = document.createElement('div');
+        icon.className = 'segment-symbol';
+        icon.innerText = mysteryIcons[i];
+
+        segment.appendChild(icon);
+        wheel.appendChild(segment);
+      });
+    }
+
+    function spinWheel() {
+      if (isSpinning || remainingChances <= 0) return;
+
+      isSpinning = true;
+      remainingChances--;
+      chanceDisplay.innerText = remainingChances;
+
+      const prizeIndex = Math.floor(Math.random() * prizes.length);
+      const segmentAngle = 360 / prizes.length;
+      const extraSpins = (6 + Math.floor(Math.random() * 3)) * 360;
+
+      const targetRotation = extraSpins + (360 - (prizeIndex * segmentAngle) - (segmentAngle / 2));
+      currentRotation += targetRotation;
+      wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+      setTimeout(() => {
+        showResult(prizes[prizeIndex]);
+      }, 5200);
+    }
+
+    function showResult(prize) {
+      wonPrizes.push(prize);
+      prizeResult.innerText = prize;
+      resultModal.style.display = 'flex';
+
+      if (remainingChances === 0) {
+        document.getElementById('modalActionBtn').innerText = "查看海豹的最终清单";
+      } else {
+        document.getElementById('modalActionBtn').innerText = "放入心愿单！";
+      }
+      startConfetti();
+    }
+
+    function closeModal() {
+      resultModal.style.display = 'none';
+      isSpinning = false;
+
+      if (remainingChances === 0) {
+        showOverview();
+      }
+    }
+
+    function showOverview() {
+      giftListContainer.innerHTML = '';
+      wonPrizes.forEach((gift, index) => {
+        const item = document.createElement('div');
+        item.className = 'gift-item';
+        item.style.animationDelay = (index * 0.15) + 's';
+        item.innerHTML = `
+          <div class="w-12 h-12 rounded-2xl bg-orange-100 flex items-center justify-center mr-5 text-2xl shadow-inner">🎁</div>
+          <div>
+            <div class="text-xs font-bold opacity-40 uppercase tracking-tighter">Heart Wish No.${index + 1}</div>
+            <div class="text-lg font-black text-brown">${gift}</div>
+          </div>
+        `;
+        giftListContainer.appendChild(item);
+      });
+
+      document.getElementById('mainUI').style.display = 'none';
+      document.getElementById('wheelArea').style.display = 'none';
+      document.getElementById('footerNote').style.display = 'none';
+      document.getElementById('overviewView').style.display = 'flex';
+    }
+
+    function resetGame() {
+      remainingChances = 3;
+      wonPrizes = [];
+      currentRotation = 0;
+      isSpinning = false;
+
+      chanceDisplay.innerText = remainingChances;
+      wheel.style.transition = 'none';
+      wheel.style.transform = `rotate(0deg)`;
+      setTimeout(() => {
+        wheel.style.transition = 'transform 5s cubic-bezier(0.15, 0, 0.15, 1)';
+      }, 50);
+
+      document.getElementById('mainUI').style.display = 'block';
+      document.getElementById('wheelArea').style.display = 'block';
+      document.getElementById('footerNote').style.display = 'block';
+      document.getElementById('overviewView').style.display = 'none';
+      document.getElementById('modalActionBtn').innerText = "放入心愿单！";
+    }
+
+    // 撒花特效
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function startConfetti() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      particles = [];
+      const colors = ['#ff6b6b', '#4dadff', '#ffd93d', '#7fd461', '#ffb7c5'];
+      for (let i = 0; i < 150; i++) {
+        particles.push({
+          x: canvas.width / 2 + (Math.random() - 0.5) * 50,
+          y: canvas.height / 2 + (Math.random() - 0.5) * 50,
+          vx: (Math.random() - 0.5) * 20,
+          vy: (Math.random() - 0.7) * 20,
+          size: Math.random() * 10 + 5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rot: Math.random() * 360,
+          rS: Math.random() * 10 - 5
+        });
+      }
+      animateConfetti();
+    }
+
+    function animateConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p, i) => {
+        p.vx *= 0.99;
+        p.vy += 0.4; // 重力
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rot += p.rS;
+        if (p.y > canvas.height) particles.splice(i, 1);
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot * Math.PI / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+        ctx.restore();
+      });
+      if (particles.length > 0) requestAnimationFrame(animateConfetti);
+    }
+
+    // 启动环境亮片
+    setInterval(createAmbientConfetti, 300);
+    initStars();
+    initWheel();
+  </script>
+</body>
+</html>
+
